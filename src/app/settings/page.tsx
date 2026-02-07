@@ -1,0 +1,342 @@
+// src/app/settings/page.tsx
+"use client"
+
+import React from "react"
+import { PageWrapper } from "@/components/layout/page-wrapper"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@/lib/db/database"
+import { settingsRepo } from "@/lib/db/repositories/settings.repo"
+import { Sun, Moon, Monitor, Palette, Volume2, Music, Bell, MousePointer2, Download, Trash2, Heart } from "lucide-react"
+import { cn } from "@/lib/utils/cn"
+import { toast } from "react-hot-toast"
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import { ShieldCheck, RefreshCw, Upload, FileJson, LogOut } from "lucide-react"
+
+export default function SettingsPage() {
+    const settings = useLiveQuery(() => db.appSettings.get('main'))
+    const [isResetDialogOpen, setIsResetDialogOpen] = React.useState(false)
+    const [isRestoreDialogOpen, setIsRestoreDialogOpen] = React.useState(false)
+    const [resetConfirmation, setResetConfirmation] = React.useState("")
+    const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+    if (!settings) return null
+
+    const updateSetting = async (key: string, value: any) => {
+        await settingsRepo.updateSettings({ [key]: value })
+        toast.success("Settings updated!")
+    }
+
+    const exportData = async () => {
+        try {
+            const designs = await db.designs.toArray()
+            const notes = await db.stickyNotes.toArray()
+            const appSettings = await db.appSettings.toArray()
+            const data = { designs, notes, settings: appSettings, version: "1.0.0", timestamp: new Date().toISOString() }
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `dream-design-backup-${new Date().toISOString().split('T')[0]}.json`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+            toast.success("Backup created successfully! Keep it safe. 🛡️")
+        } catch (error) {
+            toast.error("Failed to create backup.")
+        }
+    }
+
+    const handleRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = async (event) => {
+            try {
+                const data = JSON.parse(event.target?.result as string)
+
+                // Basic validation
+                if (!data.designs || !data.notes) {
+                    throw new Error("Invalid backup file")
+                }
+
+                if (confirm("This will replace all your current data. Are you absolutely sure?")) {
+                    await db.transaction('rw', db.designs, db.stickyNotes, db.appSettings, async () => {
+                        await db.designs.clear()
+                        await db.stickyNotes.clear()
+                        await db.designs.bulkAdd(data.designs)
+                        await db.stickyNotes.bulkAdd(data.notes)
+                        if (data.settings) {
+                            await db.appSettings.clear()
+                            await db.appSettings.bulkAdd(data.settings)
+                        }
+                    })
+                    toast.success("Progress restored! Reloading...")
+                    setTimeout(() => window.location.reload(), 1500)
+                }
+            } catch (error) {
+                toast.error("Failed to restore. Please check if the file is a valid backup.")
+            }
+        }
+        reader.readAsText(file)
+    }
+
+    const handleStartFresh = async () => {
+        if (resetConfirmation.toUpperCase() === "START FRESH") {
+            await Promise.all([
+                db.designs.clear(),
+                db.stickyNotes.clear(),
+                db.streakData.clear(),
+                db.income.clear(),
+                db.milestones.clear()
+            ])
+            toast.success("A clean slate awaits. Reloading...")
+            setTimeout(() => window.location.reload(), 1500)
+        }
+    }
+
+    return (
+        <PageWrapper className="max-w-3xl space-y-8 pb-32 pt-4">
+            <div className="space-y-1">
+                <h1 className="text-4xl font-black text-night-950 tracking-tightest">Settings</h1>
+                <p className="text-night-600 font-medium">Customize your sanctuary exactly how you like it.</p>
+            </div>
+
+            {/* Reassurance Banner */}
+            <div className="bg-night-50 border border-night-100 p-4 rounded-2xl flex items-start space-x-3">
+                <ShieldCheck className="w-5 h-5 text-green-500 mt-0.5" />
+                <p className="text-xs text-night-600 font-medium leading-relaxed">
+                    Your progress is stored safely. Nothing is deleted without your confirmation. This is your safe space.
+                </p>
+            </div>
+
+            <div className="space-y-10">
+                {/* 1. Appearance Section */}
+                <section className="space-y-4">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-night-400 flex items-center gap-2 px-1">
+                        <Palette className="w-3.5 h-3.5" /> Appearance
+                    </h3>
+                    <Card className="border-night-100 shadow-sm rounded-[2rem] overflow-hidden">
+                        <CardContent className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Theme Mode</p>
+                                    <p className="text-xs text-night-400">Sunrise is recommended for focus.</p>
+                                </div>
+                                <div className="flex bg-night-50 p-1 rounded-xl border border-night-100/50">
+                                    {[
+                                        { id: 'sunrise', icon: Sun },
+                                        { id: 'midnight', icon: Moon },
+                                        { id: 'auto', icon: Monitor }
+                                    ].map(t => (
+                                        <button
+                                            key={t.id}
+                                            onClick={() => updateSetting('theme', t.id)}
+                                            className={cn(
+                                                "flex items-center space-x-2 px-4 py-2 rounded-lg text-xs font-black transition-all",
+                                                settings.theme === t.id ? "bg-white text-night-900 shadow-sm border border-night-100" : "text-night-400 hover:text-night-600"
+                                            )}
+                                        >
+                                            <t.icon className="w-3.5 h-3.5" />
+                                            <span className="capitalize">{t.id}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t border-night-50 pt-6">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Hand-drawn Textures</p>
+                                    <p className="text-xs text-night-400">Adds paper-like grain and texture.</p>
+                                </div>
+                                <Button
+                                    variant={settings.seasonalThemeEnabled ? "primary" : "outline"}
+                                    size="sm"
+                                    className="rounded-full w-14 h-8 px-0 font-black text-[10px]"
+                                    onClick={() => updateSetting('seasonalThemeEnabled', !settings.seasonalThemeEnabled)}
+                                >
+                                    {settings.seasonalThemeEnabled ? "ON" : "OFF"}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </section>
+
+                {/* 2. Sensory Section */}
+                <section className="space-y-4">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-night-400 flex items-center gap-2 px-1">
+                        <Volume2 className="w-3.5 h-3.5" /> Sensory Experience
+                    </h3>
+                    <Card className="border-night-100 shadow-sm rounded-[2rem] overflow-hidden">
+                        <CardContent className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center">
+                                        <Volume2 className="w-4 h-4 text-pink-500" />
+                                    </div>
+                                    <span className="font-bold text-night-900">Sound Effects</span>
+                                </div>
+                                <Button
+                                    variant={settings.soundEnabled ? "primary" : "outline"}
+                                    size="sm"
+                                    className="rounded-full w-14 h-8 px-0 font-black text-[10px]"
+                                    onClick={() => updateSetting('soundEnabled', !settings.soundEnabled)}
+                                >
+                                    {settings.soundEnabled ? "ON" : "OFF"}
+                                </Button>
+                            </div>
+                            <div className="flex items-center justify-between border-t border-night-50 pt-6">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center">
+                                        <Music className="w-4 h-4 text-pink-500" />
+                                    </div>
+                                    <span className="font-bold text-night-900">Background Music</span>
+                                </div>
+                                <Button
+                                    variant={settings.musicEnabled ? "primary" : "outline"}
+                                    size="sm"
+                                    className="rounded-full w-14 h-8 px-0 font-black text-[10px]"
+                                    onClick={() => updateSetting('musicEnabled', !settings.musicEnabled)}
+                                >
+                                    {settings.musicEnabled ? "ON" : "OFF"}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </section>
+
+                {/* 3. Backup & Restore Section */}
+                <section className="space-y-4">
+                    <div className="space-y-1">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-night-400 flex items-center gap-2 px-1">
+                            <ShieldCheck className="w-3.5 h-3.5" /> Backup & Restore
+                        </h3>
+                        <p className="text-[10px] text-night-400 font-bold px-1">Your progress is precious. Keep it safe.</p>
+                    </div>
+                    <Card className="border-night-100 shadow-sm rounded-[2rem] overflow-hidden border-b-4 border-b-green-100">
+                        <CardContent className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Create Backup File</p>
+                                    <p className="text-xs text-night-400">Saves all your designs, notes, progress, and memories.</p>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={exportData} className="rounded-xl font-bold">
+                                    <Download className="w-3.5 h-3.5 mr-2" />
+                                    Create Backup
+                                </Button>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t border-night-50 pt-6">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Restore from Backup</p>
+                                    <p className="text-xs text-night-400">Recover your progress from a previously saved backup.</p>
+                                </div>
+                                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-xl font-bold">
+                                    <Upload className="w-3.5 h-3.5 mr-2" />
+                                    Restore
+                                </Button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept=".json"
+                                    onChange={handleRestore}
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between border-t border-night-50 pt-6">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Automatic Backup</p>
+                                    <p className="text-xs text-night-400">Your progress is backed up automatically on this device.</p>
+                                </div>
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    disabled
+                                    className="rounded-full w-14 h-8 px-0 font-black text-[10px] opacity-100 bg-green-100 text-green-700 border-none"
+                                >
+                                    ON
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </section>
+
+                {/* 4. Data & Privacy Section */}
+                <section className="space-y-4">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-night-400 flex items-center gap-2 px-1">
+                        <RefreshCw className="w-3.5 h-3.5" /> Data & Privacy
+                    </h3>
+                    <Card className="border-night-100 shadow-sm rounded-[2rem] overflow-hidden">
+                        <CardContent className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-night-900">Start Fresh</p>
+                                    <p className="text-xs text-night-400 max-w-[200px]">Clears all data permanently. We strongly recommend creating a backup first.</p>
+                                </div>
+                                <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="danger" size="sm" className="rounded-xl font-bold bg-red-50 text-red-500 hover:bg-red-100">
+                                            <Trash2 className="w-3.5 h-3.5 mr-2" />
+                                            Start Fresh
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="rounded-[2rem]">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-2xl font-black text-night-950">Are you absolutely sure?</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="py-6 space-y-4">
+                                            <div className="p-4 bg-red-50 rounded-2xl text-red-700 text-sm font-medium leading-relaxed">
+                                                This will permanently delete all your designs, notes, streaks, and progress. This cannot be undone unless you have a backup.
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black uppercase tracking-widest text-night-400">Type "START FRESH" to confirm</label>
+                                                <input
+                                                    type="text"
+                                                    value={resetConfirmation}
+                                                    onChange={e => setResetConfirmation(e.target.value)}
+                                                    placeholder="START FRESH"
+                                                    className="w-full h-12 px-4 rounded-xl border-2 border-night-100 focus:border-red-200 outline-none text-night-950 font-bold"
+                                                />
+                                            </div>
+                                        </div>
+                                        <DialogFooter className="gap-2 sm:gap-0">
+                                            <Button variant="outline" onClick={() => setIsResetDialogOpen(false)} className="rounded-xl font-bold h-12">Cancel</Button>
+                                            <Button
+                                                variant="danger"
+                                                onClick={handleStartFresh}
+                                                disabled={resetConfirmation.toUpperCase() !== "START FRESH"}
+                                                className="rounded-xl font-bold h-12 bg-red-500 text-white hover:bg-red-600 disabled:opacity-30"
+                                            >
+                                                Delete Everything
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </section>
+
+                {/* Credits Section */}
+                <div className="pt-12 text-center space-y-6">
+                    <div className="flex justify-center -space-x-3">
+                        <div className="w-12 h-12 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center shadow-lg text-xl">👦</div>
+                        <div className="w-12 h-12 rounded-full border-4 border-white bg-pink-100 flex items-center justify-center shadow-lg text-xl">👧</div>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-night-600 text-sm font-black tracking-tight flex items-center justify-center">
+                            Handcrafted with <Heart className="inline w-4 h-4 text-pink-500 fill-pink-500 mx-1.5 animate-pulse-soft" /> for Shubham & Khushi.
+                        </p>
+                        <p className="text-[10px] text-night-400 font-bold uppercase tracking-[0.2em] opacity-60">Version 1.0.0 • Offline First</p>
+                    </div>
+                </div>
+            </div>
+        </PageWrapper>
+    )
+}

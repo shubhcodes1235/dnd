@@ -1,0 +1,128 @@
+// src/components/layout/header.tsx
+"use client"
+
+import React from "react"
+import { usePathname } from "next/navigation"
+import { Settings, Heart, ArrowLeftRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@/lib/db/database"
+import { motion } from "framer-motion"
+import Link from "next/link"
+import { cn } from "@/lib/utils/cn"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useAppStore } from "@/lib/store/app-store"
+import { EmergencyButton } from "@/components/layout/emergency-button"
+
+const pageTitles: Record<string, string> = {
+    "/home": "Workspace",
+    "/archive": "Gallery",
+    "/upload": "Create",
+    "/board": "Board",
+    "/progress": "Progress",
+    "/vault": "Vault",
+    "/settings": "Settings",
+}
+
+export function Header() {
+    const pathname = usePathname()
+    const { currentPerson, setCurrentPerson } = useAppStore()
+
+    const title = pageTitles[pathname] || "Dream & Design"
+
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+
+    const handleSwitch = async (person: 'shubham' | 'khushi' | 'both') => {
+        setCurrentPerson(person)
+        await db.appSettings.update('main', { currentPerson: person })
+        setIsDialogOpen(false)
+    }
+
+    return (
+        <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-night-100 px-6 py-4">
+            <div className="flex items-center justify-between mx-auto max-w-7xl">
+                <div className="flex flex-col">
+                    <h1 className="text-sm font-black text-night-900 tracking-widest uppercase opacity-80">
+                        {title}
+                    </h1>
+                    <p className="text-[9px] text-pink-500 font-bold uppercase tracking-[0.2em] mt-1 flex items-center gap-1.5">
+                        <span>Chal chal chal</span>
+                        <span className="w-1 h-1 rounded-full bg-pink-200" />
+                        <span className="opacity-60 lowercase">start where you are</span>
+                    </p>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                            <button className="flex items-center space-x-2 bg-night-50 hover:bg-white pl-1 pr-3 py-1 rounded-full border border-night-100 transition-all shadow-sm hover:shadow-md group">
+                                <div className="flex -space-x-1.5">
+                                    <div className={cn(
+                                        "w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-sm shadow-sm transition-all",
+                                        currentPerson === 'shubham' || currentPerson === 'both' ? "bg-blue-100 z-10" : "bg-night-100 opacity-40 scale-90"
+                                    )}>👦</div>
+                                    <div className={cn(
+                                        "w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-sm shadow-sm transition-all",
+                                        currentPerson === 'khushi' || currentPerson === 'both' ? "bg-pink-100 z-10" : "bg-night-100 opacity-40 scale-90"
+                                    )}>👧</div>
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-night-600 group-hover:text-night-900">
+                                    {currentPerson === 'both' ? 'Us' : currentPerson}
+                                </span>
+                            </button>
+                        </DialogTrigger>
+                        <DialogContent className="rounded-[2rem] max-w-xs">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl font-black text-night-950">Who is here?</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-3 pt-4">
+                                <button onClick={() => handleSwitch('shubham')} className={cn("flex items-center p-3 rounded-2xl border-2 transition-all space-x-4", currentPerson === 'shubham' ? "border-blue-200 bg-blue-50" : "border-transparent hover:bg-night-50")}>
+                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">👦</div>
+                                    <div className="text-left">
+                                        <div className="font-black text-night-900 text-sm">Shubham</div>
+                                        <div className="text-[10px] font-bold text-night-400 uppercase tracking-wider">Builder Mode</div>
+                                    </div>
+                                    {currentPerson === 'shubham' && <div className="ml-auto w-2 h-2 rounded-full bg-blue-500" />}
+                                </button>
+
+                                <button onClick={() => handleSwitch('khushi')} className={cn("flex items-center p-3 rounded-2xl border-2 transition-all space-x-4", currentPerson === 'khushi' ? "border-pink-200 bg-pink-50" : "border-transparent hover:bg-night-50")}>
+                                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-xl">👧</div>
+                                    <div className="text-left">
+                                        <div className="font-black text-night-900 text-sm">Khushi</div>
+                                        <div className="text-[10px] font-bold text-night-400 uppercase tracking-wider">Dreamer Mode</div>
+                                    </div>
+                                    {currentPerson === 'khushi' && <div className="ml-auto w-2 h-2 rounded-full bg-pink-500" />}
+                                </button>
+
+                                <button onClick={() => handleSwitch('both')} className={cn("flex items-center p-3 rounded-2xl border-2 transition-all space-x-4", currentPerson === 'both' ? "border-purple-200 bg-purple-50" : "border-transparent hover:bg-night-50")}>
+                                    <div className="flex -space-x-2">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm border-2 border-white">👦</div>
+                                        <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-sm border-2 border-white">👧</div>
+                                    </div>
+                                    <div className="text-left pl-2">
+                                        <div className="font-black text-night-900 text-sm">Together</div>
+                                        <div className="text-[10px] font-bold text-night-400 uppercase tracking-wider">Our Space</div>
+                                    </div>
+                                    {currentPerson === 'both' && <div className="ml-auto w-2 h-2 rounded-full bg-purple-500" />}
+                                </button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
+                    <div className="hidden md:flex items-center space-x-1 border-l border-night-100 pl-4 ml-2">
+                        {/* Settings icon */}
+                        <Link href="/settings">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-xl w-9 h-9 text-night-400 hover:text-night-900 hover:bg-night-50"
+                            >
+                                <Settings className="w-5 h-5" />
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </header>
+    )
+}

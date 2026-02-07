@@ -1,0 +1,29 @@
+{
+    "name": "Dream & Design Companion",
+    "short_name": "Dream&Design",
+    "description": "Stay Goated 🐐 — Your creative journey companion",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FFF5EE",
+    "theme_color": "#FF69B4",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "creativity",
+        "productivity",
+        "lifestyle"
+    ]
+}
