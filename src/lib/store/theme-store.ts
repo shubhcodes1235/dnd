@@ -9,6 +9,6 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
-    currentTheme: 'auto',
+    currentTheme: 'sunrise',
     setTheme: (theme) => set({ currentTheme: theme }),
 }));

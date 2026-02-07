@@ -17,7 +17,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const settings = useLiveQuery(() => db.appSettings.get('main'));
-    const [theme, setThemeState] = useState<Theme>('auto');
+    const [theme, setThemeState] = useState<Theme>('sunrise');
     const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
     useEffect(() => {

@@ -131,7 +131,7 @@ export async function seedDatabase() {
             id: "main",
             manifestationQuote: DefaultManifestationQuote.trim(),
             sharedWhy: DefaultWhyStatement.trim(),
-            theme: "auto",
+            theme: "sunrise",
             soundEnabled: true,
             musicEnabled: true,
             notificationsEnabled: true,
