@@ -127,6 +127,7 @@ export async function seedDatabase() {
     const settingsCount = await db.appSettings.count();
 
     if (settingsCount === 0) {
+        // Initialize default settings with 'sunrise' theme
         const defaultSettings: AppSettings = {
             id: "main",
             manifestationQuote: DefaultManifestationQuote.trim(),
