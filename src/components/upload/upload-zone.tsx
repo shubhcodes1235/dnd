@@ -55,7 +55,7 @@ export function UploadZone({ file, onFileSelect }: UploadZoneProps) {
                 ) : (
                     <motion.div
                         key="dropzone"
-                        {...getRootProps()}
+                        {...(getRootProps() as any)}
                         className={cn(
                             "border-4 border-dashed rounded-4xl p-12 flex flex-col items-center justify-center space-y-4 cursor-pointer transition-all duration-300 min-h-[300px]",
                             isDragActive

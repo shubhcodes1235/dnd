@@ -1,7 +1,7 @@
 // src/components/home/win-of-the-day.tsx
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@/lib/db/database"
 import { winsRepo } from "@/lib/db/repositories/wins.repo"
@@ -21,21 +21,27 @@ export function WinOfTheDay({ minimal = false }: { minimal?: boolean }) {
     // Use a simpler query or state if needed, but keeping it same for now.
     // Actually, hook rules must be at top level.
     const [content, setContent] = useState("")
+    const [author, setAuthor] = useState<'shubham' | 'khushi'>(
+        currentPerson === 'both' ? 'shubham' : currentPerson
+    )
 
-    // We can't use live query conditionally.
-    // But we can just use the repo directly if needed, or stick to this.
-    // winsRepo is not a hook, so we need useLiveQuery wrapper? Yes.
-    // Wait, the original code had: const todayWin = useLiveQuery(() => winsRepo.getWinByDate(today, currentPerson))
-    // This is fine.
+    useEffect(() => {
+        if (currentPerson !== 'both') {
+            setAuthor(currentPerson)
+        }
+    }, [currentPerson])
 
-    const todayWin = useLiveQuery(() => winsRepo.getWinByDate(today, currentPerson))
+    const todayWin = useLiveQuery(
+        () => winsRepo.getWinByDate(today, author),
+        [today, author]
+    )
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!content.trim()) return
 
         await winsRepo.addWin({
-            person: currentPerson,
+            person: author,
             content: content.trim(),
             date: today
         })
@@ -138,7 +144,25 @@ export function WinOfTheDay({ minimal = false }: { minimal?: boolean }) {
                         </motion.form>
                     )}
                 </AnimatePresence>
+                {currentPerson === 'both' && !todayWin && (
+                    <div className="flex gap-2 justify-center mt-4">
+                        <button
+                            type="button"
+                            onClick={() => setAuthor('shubham')}
+                            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${author === 'shubham' ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                        >
+                            Shubham
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setAuthor('khushi')}
+                            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${author === 'khushi' ? 'bg-pink-100 text-pink-600' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                        >
+                            Khushi
+                        </button>
+                    </div>
+                )}
             </CardContent>
-        </Card>
+        </Card >
     )
 }

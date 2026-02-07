@@ -1,7 +1,7 @@
 // src/app/vault/gratitude/page.tsx
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { PageWrapper } from "@/components/layout/page-wrapper"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@/lib/db/database"
@@ -21,6 +21,15 @@ export default function GratitudePage() {
     )
 
     const [content, setContent] = useState("")
+    const [author, setAuthor] = useState<'shubham' | 'khushi'>(
+        currentPerson === 'both' ? 'shubham' : currentPerson
+    )
+
+    useEffect(() => {
+        if (currentPerson !== 'both') {
+            setAuthor(currentPerson)
+        }
+    }, [currentPerson])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -28,7 +37,7 @@ export default function GratitudePage() {
 
         await db.gratitudeEntries.add({
             id: nanoid(),
-            person: currentPerson,
+            person: author,
             content: content.trim(),
             date: new Date().toISOString().split('T')[0],
             createdAt: new Date()
@@ -51,6 +60,24 @@ export default function GratitudePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="glass p-8 rounded-4xl border-2 border-pink-100 shadow-warm space-y-6">
+                {currentPerson === 'both' && (
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            type="button"
+                            onClick={() => setAuthor('shubham')}
+                            className={`px-6 py-2 rounded-full transition-all font-bold ${author === 'shubham' ? 'bg-blue-500 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                        >
+                            👦 Shubham
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setAuthor('khushi')}
+                            className={`px-6 py-2 rounded-full transition-all font-bold ${author === 'khushi' ? 'bg-pink-500 text-white shadow-lg scale-105' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                        >
+                            👧 Khushi
+                        </button>
+                    </div>
+                )}
                 <div className="space-y-4">
                     <label className="text-sm font-bold uppercase tracking-widest text-night-500">I am grateful for...</label>
                     <Input
