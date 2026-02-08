@@ -17,7 +17,7 @@ export function TypingAnimation({ sequence, className, repeat = Infinity }: Typi
             wrapper="span"
             speed={50}
             repeat={repeat}
-            className={cn("font-handwritten", className)}
+            className={className}
         />
     );
 }

@@ -6,23 +6,18 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                // Primary Pink Palette
-                strawberry: {
-                    50: '#FFFAF9', // Neutral Warm Off-White (Background)
-                    100: '#FFD1DC',
-                    200: '#FFB7C5',
-                    500: '#FF3388', // Saturated Hero Pink (CTAs)
-                    600: '#E62E7A',
+                raspberry: {
+                    DEFAULT: '#E91E63',
+                    hover: '#D81B60',
                 },
-                plum: {
-                    950: '#0F010F',
-                    900: '#1A011A',
-                    800: '#2D022D',
-                    700: '#4D044D',
-                    600: '#7A067A',
+                blush: {
+                    50: '#FFF5F7',
+                    100: '#F8BBD0',
                 },
+                'deep-plum': '#2A1B2E',
+                charcoal: '#4A142F',
                 night: {
-                    50: '#F5F5F3', // Warm Off-White
+                    50: '#F5F5F3',
                     100: '#E8E8E1',
                     200: '#D1D1C7',
                     300: '#B9B9AD',
@@ -32,7 +27,7 @@ const config: Config = {
                     700: '#59594D',
                     800: '#414137',
                     900: '#292921',
-                    950: '#11110B', // Near Black
+                    950: '#11110B',
                 },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
@@ -69,10 +64,9 @@ const config: Config = {
                 },
             },
             fontFamily: {
-                sans: ['Plus Jakarta Sans', 'sans-serif'],
+                sans: ['Inter', 'sans-serif'],
+                poppins: ['Poppins', 'sans-serif'],
                 handwritten: ['Caveat', 'cursive'],
-                display: ['Patrick Hand', 'cursive'],
-                indie: ['Indie Flower', 'cursive'],
             },
             borderRadius: {
                 'xl': '1rem',
@@ -81,10 +75,10 @@ const config: Config = {
                 '4xl': '3rem',
             },
             boxShadow: {
-                'soft': '0 2px 15px -3px rgba(255, 105, 180, 0.1)',
-                'glow': '0 0 20px rgba(255, 105, 180, 0.3)',
-                'warm': '0 4px 20px rgba(255, 127, 127, 0.15)',
-                'pink-soft': '0 10px 40px -10px rgba(255, 105, 180, 0.2)',
+                'soft': '0 2px 15px -3px rgba(233, 30, 99, 0.1)',
+                'glow': '0 0 20px rgba(233, 30, 99, 0.3)',
+                'rose-glow': '0 10px 40px -10px rgba(233, 30, 99, 0.25)',
+                'pink-soft': '0 10px 40px -10px rgba(233, 30, 99, 0.2)',
             },
             letterSpacing: {
                 'handwritten': '-0.03em',

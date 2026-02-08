@@ -10,6 +10,7 @@ import { QuickStats } from "@/components/home/quick-stats"
 import { TodayPrompt } from "@/components/home/today-prompt"
 import { WinOfTheDay } from "@/components/home/win-of-the-day"
 import { UsMoment } from "@/components/home/us-moment"
+import { PartnerFeed } from "@/components/home/partner-feed"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -105,7 +106,6 @@ export default function HomePage() {
                         )}>
                             {slot1Label}
                         </div>
-                        {/* For Khushi: UsMoment (Connection). For Shubham: Streak (Growth). */}
                         {isKhushi ? (
                             <UsMoment />
                         ) : (
@@ -124,14 +124,21 @@ export default function HomePage() {
                 </section>
             )}
 
-            {/* 3. OPTIONAL NUDGE (If needed, keep it subtle) */}
+            {/* 3. PARTNER FEED (Real-time updates) */}
+            {showSecondary && (
+                <section className="w-full max-w-4xl mx-auto animate-in fade-in duration-700 delay-300">
+                    <PartnerFeed />
+                </section>
+            )}
+
+            {/* 4. OPTIONAL NUDGE (If needed, keep it subtle) */}
             {showDeep && !isKhushi && (
                 <section className="max-w-xl mx-auto animate-in fade-in duration-700">
                     <TodayPrompt />
                 </section>
             )}
 
-            {/* 4. FOOTER: The Why */}
+            {/* 5. FOOTER: The Why */}
             <section className="w-full pt-12 border-t border-primary/10 animate-in fade-in duration-1000">
                 <div className="text-center space-y-4">
                     <p className="font-handwritten text-xl text-night-700 italic opacity-80">

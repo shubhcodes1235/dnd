@@ -2,39 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Caveat:wght@400..700&family=Patrick+Hand&family=Indie+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Poppins:wght@400;500;700;800;900&family=Caveat:wght@400..700&display=swap');
 
 @layer base {
   :root {
-    --background: 34 30% 94%;
-    /* Warmer Cream Background */
-    --foreground: 240 10% 4%;
-    /* Deepest Contrast */
+    --background: 345 100% 98%;
+    /* #FFF5F7 */
+    --foreground: 295 25% 15%;
+    /* #2A1B2E (Deep Plum) */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
+    --card-foreground: 295 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
+    --popover-foreground: 295 25% 15%;
 
     --primary: 335 100% 55%;
     /* More Saturated Hero Pink */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 90%;
+    --secondary: 335 100% 95%;
     --secondary-foreground: 335 100% 55%;
 
-    --muted: 0 0% 90%;
-    --muted-foreground: 240 5% 30%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 295 25% 30%;
 
-    --accent: 0 0% 90%;
+    --accent: 335 100% 95%;
     --accent-foreground: 335 100% 55%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5% 85%;
-    --input: 240 5% 85%;
+    --border: 335 100% 90%;
+    --input: 335 100% 90%;
     --ring: 335 100% 55%;
 
     --radius: 1.5rem;
@@ -77,8 +77,10 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans selection:bg-pink-200 selection:text-pink-900;
+    @apply bg-background text-foreground font-sans selection:bg-pink-100 selection:text-pink-900;
     min-height: 100vh;
+    background: linear-gradient(135deg, #FFF5F7 0%, #F8BBD0 100%);
+    background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -144,7 +146,7 @@
 }
 
 .dark .glass {
-  @apply bg-plum-900/40 backdrop-blur-xl border border-white/5;
+  @apply bg-deep-plum/40 backdrop-blur-xl border border-white/5;
 }
 
 /* Typography Overrides */

@@ -13,6 +13,7 @@ import { useImageCompression } from "@/lib/hooks/use-image-compression"
 import { toast } from "react-hot-toast"
 import { useCelebration } from "@/providers/celebration-provider"
 import { useSound } from "@/providers/sound-provider"
+import { createDesignInFirebase } from "@/lib/firebase/services/designs"
 
 function UploadPageContent() {
     const router = useRouter()
@@ -60,6 +61,23 @@ function UploadPageContent() {
                 workType: formData.workType,
                 isFirstDesign: isFirst,
             })
+
+            // 2.5 Firebase Save (Cloud Sync)
+            // Fire and forget - don't block the UI if this fails, but log it.
+            createDesignInFirebase(file, {
+                title: formData.title,
+                description: formData.description,
+                tool: formData.tool,
+                toolDetail: formData.toolDetail,
+                moodRating: formData.moodRating,
+                tags: formData.tags,
+                uploadedByPersona: uploader as 'shubham' | 'khushi',
+                workType: formData.workType,
+                isFirstDesign: isFirst
+            }).catch(err => {
+                console.error("Firebase Sync Failed:", err);
+                toast.error("Saved locally, but sync failed.", { id: toastId });
+            });
 
             // 3. Update Streak
             await streaksRepo.recordActivity(uploader)

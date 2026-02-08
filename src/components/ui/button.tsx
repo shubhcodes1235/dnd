@@ -6,21 +6,21 @@ import { cn } from "@/lib/utils/cn"
 import { motion, HTMLMotionProps } from "framer-motion"
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-2xl text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+    "inline-flex items-center justify-center whitespace-nowrap rounded-3xl text-sm font-medium ring-offset-background transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
     {
         variants: {
             variant: {
-                primary: "bg-pink-300 text-pink-900 hover:bg-pink-400 hover:shadow-glow",
-                secondary: "bg-coral-100 text-coral-700 hover:bg-coral-200",
-                ghost: "hover:bg-pink-50 text-pink-600",
-                danger: "bg-red-100 text-red-600 hover:bg-red-200",
-                outline: "border-2 border-pink-200 bg-transparent hover:bg-pink-50 text-pink-600",
+                primary: "bg-gradient-to-r from-raspberry to-[#FFAB91] text-white hover:shadow-rose-glow hover:opacity-90",
+                secondary: "border border-transparent bg-white text-deep-plum shadow-rose-glow hover:-translate-y-2 hover:shadow-glow hover:border-raspberry/20",
+                ghost: "hover:bg-blush-50 text-raspberry",
+                danger: "bg-red-50 text-red-600 hover:bg-red-100",
+                outline: "border-2 border-raspberry bg-transparent hover:bg-blush-50 text-raspberry",
             },
             size: {
-                sm: "h-9 px-3 text-xs",
-                md: "h-11 px-6",
-                lg: "h-14 px-10 text-lg rounded-3xl",
-                icon: "h-10 w-10",
+                sm: "h-9 px-4 text-xs rounded-full",
+                md: "h-11 px-6 rounded-full",
+                lg: "h-14 px-10 text-lg rounded-full",
+                icon: "h-10 w-10 rounded-full",
             },
         },
         defaultVariants: {
