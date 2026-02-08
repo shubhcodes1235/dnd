@@ -95,6 +95,13 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* 1.5 Progress Bar for Everyone */}
+            {showSecondary && (
+                <section className="w-full max-w-4xl mx-auto animate-in fade-in duration-500 delay-200">
+                    <DreamProgressBar />
+                </section>
+            )}
+
             {/* 2. CORE WORKSPACE GRID (Identical Layout, Different Content) */}
             {showSecondary && (
                 <section className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500 max-w-4xl mx-auto">

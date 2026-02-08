@@ -48,9 +48,9 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
                         key="loading"
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-cream-50 h-[100dvh] w-screen overflow-hidden"
+                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background h-[100dvh] w-screen overflow-hidden"
                     >
-                        <div className="relative">
+                        <div className="relative flex flex-col items-center">
                             <motion.div
                                 animate={{
                                     scale: [1, 1.2, 1],
@@ -61,13 +61,13 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
                                     repeat: Infinity,
                                     ease: "easeInOut"
                                 }}
-                                className="w-16 h-16 border-4 border-pink-300 border-t-pink-500 rounded-full"
+                                className="w-16 h-16 border-4 border-blush-100 border-t-raspberry rounded-full"
                             />
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="mt-8 text-pink-600 font-handwritten text-2xl animate-pulse"
+                                className="mt-8 text-deep-plum font-poppins text-lg font-bold animate-pulse tracking-widest uppercase"
                             >
                                 Initializing your dreams...
                             </motion.div>

@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Caveat, Patrick_Hand, Indie_Flower } from "next/font/google";
 import "./globals.css";
 
 // Providers
@@ -9,11 +8,6 @@ import { SoundProvider } from "@/providers/sound-provider";
 import { CelebrationProvider } from "@/providers/celebration-provider";
 import { NotificationProvider } from "@/providers/notification-provider";
 import { RootLayoutWrapper } from "@/components/layout/root-layout-wrapper";
-
-const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
-const caveat = Caveat({ subsets: ["latin"], variable: "--font-handwritten" });
-const patrickHand = Patrick_Hand({ weight: "400", subsets: ["latin"], variable: "--font-display" });
-const indieFlower = Indie_Flower({ weight: "400", subsets: ["latin"], variable: "--font-indie" });
 
 export const metadata: Metadata = {
   title: "Dream & Design Companion",
@@ -40,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} ${caveat.variable} ${patrickHand.variable} ${indieFlower.variable} font-sans antialiased bg-background text-night-900 custom-cursor`}>
+      <body className="font-sans antialiased bg-background text-foreground custom-cursor">
         <DatabaseProvider>
           <ThemeProvider>
             <SoundProvider>
